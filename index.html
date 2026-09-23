@@ -55,7 +55,7 @@
 <div class="hero-actions"><a class="btn" href="#historia">Conocer nuestra historia ↗</a><a class="btn gold" href="#rsvp">Confirmar asistencia</a><a class="calendar-link" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Boda%20de%20Ivonne%20y%20Fernando&dates=20261205T220000Z/20261206T030000Z&location=Girardota%2C%20Antioquia%2C%20Colombia" target="_blank" rel="noopener noreferrer">Guardar la fecha en mi calendario ↗</a></div>
 </div>
 <div class="hero-image">
-<img src="novios.jpg" alt="Ivonne y Fernando" fetchpriority="high">
+<img src="assets/novios.jpg" alt="Ivonne y Fernando" fetchpriority="high">
 <div class="floating-note"><span class="script" style="font-size:2rem;color:var(--olive)">Para siempre</span><br>Con la bendición de Dios</div>
 </div>
 </section>
@@ -489,27 +489,24 @@ if(openingCover&&snowContext&&!window.matchMedia('(prefers-reduced-motion: reduc
   resizeSnow();drawSnow();
 }
 
-openInvitation?.addEventListener('click', async ()=>{
+openInvitation?.addEventListener('click', ()=>{
   openingCover.classList.add('is-closing');
   document.body.classList.remove('cover-open');
   window.history.scrollRestoration='manual';
   window.scrollTo({top:0,left:0,behavior:'instant'});
 
-  const music=document.getElementById('music');
-  if(music){
-    try{
-      music.muted=false;
-      await music.play();
-    }catch(e){
-      // El navegador puede requerir una segunda interacción para reproducir audio.
-    }
-  }
-
   setTimeout(()=>{
-    if(snowCanvas){snowCanvas.classList.add('snow-canvas-global');document.body.appendChild(snowCanvas)}
+    if(snowCanvas){
+      snowCanvas.classList.add('snow-canvas-global');
+      Object.assign(snowCanvas.style,{position:'fixed',inset:'0',zIndex:'12',width:'100vw',height:'100vh',pointerEvents:'none'});
+      document.body.appendChild(snowCanvas);
+    }
     openingCover.remove();
     window.scrollTo(0,0);
   },850);
+
+  const music=document.getElementById('music');
+  if(music){music.muted=false;music.play().catch(()=>{});}
 });
 
 </script>
