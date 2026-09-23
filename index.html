@@ -207,10 +207,10 @@
 
 <footer><div class="script">Ivonne & Fernando</div><p>05 · XII · MMXXVI</p><p style="margin-top:25px">Con todo nuestro amor, los esperamos.</p></footer>
 
-<audio id="music" loop preload="auto" autoplay muted>
-<source src="musica.MP3" type="audio/mpeg">
+<audio id="music" loop preload="none">
+<source src="musica.mp3" type="audio/mpeg">
 </audio>
-<button class="music" id="musicBtn" aria-label="Activar o pausar música" aria-pressed="false">♫</button>
+<button class="music" id="musicBtn" aria-label="Activar música" aria-pressed="false" title="Activar música">♫</button>
 
 <script>
 const header=document.getElementById('header');
@@ -225,28 +225,16 @@ const target=new Date(2026,11,5,17,0,0);
 function countdown(){let d=Math.max(0,target-new Date());document.getElementById('days').textContent=Math.floor(d/86400000);document.getElementById('hours').textContent=String(Math.floor(d%86400000/3600000)).padStart(2,'0');document.getElementById('minutes').textContent=String(Math.floor(d%3600000/60000)).padStart(2,'0');document.getElementById('seconds').textContent=String(Math.floor(d%60000/1000)).padStart(2,'0')}
 countdown();setInterval(countdown,1000);
 const music=document.getElementById('music'),musicBtn=document.getElementById('musicBtn');
-let musicStarted=false;
-async function startMusic(){
-  try{
-    music.muted=false;
-    await music.play();
-    musicStarted=true;
-    musicBtn.textContent='Ⅱ';
-  }catch(e){
-    music.muted=true;
-    try{await music.play();}catch(ignore){}
-    musicBtn.textContent='♫';
-  }
-}
-window.addEventListener('load',()=>{startMusic();},{once:true});
-document.addEventListener('pointerdown',()=>{if(!musicStarted)startMusic();},{once:true});
+function updateMusicControl(playing){musicBtn.textContent=playing?'Ⅱ':'♫';musicBtn.setAttribute('aria-pressed',String(playing));musicBtn.setAttribute('aria-label',playing?'Pausar música':'Activar música');musicBtn.title=playing?'Pausar música':'Activar música'}
+music.addEventListener('play',()=>updateMusicControl(true));
+music.addEventListener('pause',()=>updateMusicControl(false));
+music.addEventListener('error',()=>{musicBtn.title='No se pudo cargar musica.mp3';musicBtn.setAttribute('aria-label','No se pudo cargar la música')});
 musicBtn.addEventListener('click',async()=>{
   if(music.paused){
-    try{music.muted=false;await music.play();musicStarted=true;musicBtn.textContent='Ⅱ';}
-    catch(e){alert('Verifica que el archivo musica.mp3 esté en la misma carpeta que este HTML.');}
+    try{music.muted=false;await music.play();}
+    catch(e){musicBtn.title='No se pudo reproducir la música. Revisa musica.mp3.';}
   }else{
     music.pause();
-    musicBtn.textContent='♫';
   }
 });
 
